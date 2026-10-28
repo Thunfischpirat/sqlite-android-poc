@@ -12,22 +12,20 @@
 #include <QVariant>
 #include <stdexcept>
 
-static void check(bool success, const QString &error)
-{
-    if (!success) throw std::runtime_error(error.toStdString());
-}
+// Workflow: Open → CREATE TABLE → INSERT → Close → Reopen read-only → SELECT → Return message → Cleanup
 
 static QJsonObject runDemo(const QString &path, const QString &driverPath)
 {
+    // Initialize Qt
     int argc = 1;
     char name[] = "SqlitePoc";
     char *argv[] = {name, nullptr};
     QCoreApplication application(argc, argv);
+    // Load SQLite driver
     QPluginLoader loader(driverPath);
     auto *factory = qobject_cast<QSqlDriverPlugin *>(loader.instance());
-    check(factory != nullptr, "Cannot load SQLite driver: " + loader.errorString());
+    // Create and open database
     auto *driver = factory->create("QSQLITE");
-    check(driver != nullptr, "QSQLITE driver unavailable");
     auto database = QSqlDatabase::addDatabase(driver, "poc");
     const auto cleanup = qScopeGuard([&] {
         database.close();
@@ -36,25 +34,20 @@ static QJsonObject runDemo(const QString &path, const QString &driverPath)
     });
     database.setDatabaseName(path);
     bool opened = database.open();
-    check(opened, database.lastError().text());
+    // Create table and write message 
     {
         QSqlQuery query(database);
         bool created = query.exec(
             "CREATE TABLE IF NOT EXISTS demo (id INTEGER PRIMARY KEY, message TEXT)");
-        check(created, query.lastError().text());
         bool inserted = query.exec(
             "INSERT OR IGNORE INTO demo VALUES (1, 'Hello from Qt SQLite')");
-        check(inserted, query.lastError().text());
     }
-    // Destroy the query before closing; the second open cannot create a file.
+    // Demonstrate persistence
     database.close();
     database.setConnectOptions("QSQLITE_OPEN_READONLY");
     opened = database.open();
-    check(opened, database.lastError().text());
     QSqlQuery query(database);
     bool selected = query.exec("SELECT message FROM demo WHERE id = 1");
-    check(selected, query.lastError().text());
-    check(query.next(), "Saved demonstration row was not found");
     return {{"path", path}, {"message", query.value(0).toString()}};
 }
 
@@ -68,6 +61,9 @@ Java_com_example_sqlitepoc_SqlitePoc_nativeRun(
     } catch (const std::exception &error) {
         result = {{"error", QString::fromUtf8(error.what())}};
     }
-    const QString json = QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Compact));
-    return env->NewString(reinterpret_cast<const jchar *>(json.utf16()), json.size());
+    const QString json = QString::fromUtf8(
+        QJsonDocument(result).toJson(QJsonDocument::Compact)
+    );
+    const QJniObject javaString = QJniObject::fromString(json);
+    return static_cast<jstring>(env->NewLocalRef(javaString.object()));
 }

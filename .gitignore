@@ -8,5 +8,6 @@ native-plugin/src/android/libs/
 *.sqlite
 *.keystore
 *.jks
+*.swp
 local.properties
 .env*

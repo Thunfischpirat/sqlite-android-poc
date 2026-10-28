@@ -18,20 +18,17 @@ public class SqlitePoc extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callback) {
-        if (!"run".equals(action)) return false;
-        cordova.getThreadPool().execute(() -> {
-            try {
-                var activity = cordova.getActivity();
-                String path = new File(activity.getFilesDir(), "demo.sqlite").getPath();
-                String driver = new File(activity.getApplicationInfo().nativeLibraryDir,
-                    "libplugins_sqldrivers_qsqlite_arm64-v8a.so").getPath();
-                JSONObject result = new JSONObject(nativeRun(path, driver));
-                if (result.has("error")) callback.error(result.getString("error"));
-                else callback.success(result);
-            } catch (Exception error) {
-                callback.error(error.toString());
-            }
-        });
+        try {
+            var activity = cordova.getActivity();
+            String path = new File(activity.getFilesDir(), "demo.sqlite").getPath();
+            String driver = new File(activity.getApplicationInfo().nativeLibraryDir,
+                "libplugins_sqldrivers_qsqlite_arm64-v8a.so").getPath();
+            JSONObject result = new JSONObject(nativeRun(path, driver));
+            if (result.has("error")) callback.error(result.getString("error"));
+            else callback.success(result);
+        } catch (Exception error) {
+            callback.error(error.toString());
+        }
         return true;
     }
 }

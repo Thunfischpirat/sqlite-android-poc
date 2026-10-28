@@ -1,0 +1,25 @@
+{
+  "name": "com.example.sqlitepoc",
+  "displayName": "SqliteAndroidPoc",
+  "version": "1.0.0",
+  "description": "Minimal Cordova to Qt SQLite Android proof of concept.",
+  "scripts": {
+    "test": "node --check www/js/index.js && node --check native-plugin/www/SqlitePoc.js"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cordova-android": "^15.1.0",
+    "cordova-plugin-sqlite-poc": "file:native-plugin"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-sqlite-poc": {}
+    }
+  }
+}

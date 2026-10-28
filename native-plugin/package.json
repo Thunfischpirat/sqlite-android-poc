@@ -1,0 +1,10 @@
+{
+  "name": "cordova-plugin-sqlite-poc",
+  "version": "0.1.0",
+  "cordova": {
+    "id": "cordova-plugin-sqlite-poc",
+    "platforms": [
+      "android"
+    ]
+  }
+}

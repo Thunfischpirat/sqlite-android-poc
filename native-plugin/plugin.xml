@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-sqlite-poc" version="0.1.0">
+    <name>SqlitePoc</name>
+    <js-module name="SqlitePoc" src="www/SqlitePoc.js">
+        <clobbers target="cordova.plugins.sqlitePoc" />
+    </js-module>
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SqlitePoc">
+                <param name="android-package" value="com.example.sqlitepoc.SqlitePoc" />
+            </feature>
+        </config-file>
+        <source-file src="src/android/SqlitePoc.java" target-dir="src/com/example/sqlitepoc" />
+        <lib-file src="src/android/libs/Qt6Android.jar" />
+        <framework src="src/android/sqlite-poc.gradle" custom="true" type="gradleReference" />
+        <resource-file src="src/android/libs/arm64-v8a/libSqlitePoc.so" target="jniLibs/arm64-v8a/libSqlitePoc.so" />
+        <resource-file src="src/android/libs/arm64-v8a/libQt6Core_arm64-v8a.so" target="jniLibs/arm64-v8a/libQt6Core_arm64-v8a.so" />
+        <resource-file src="src/android/libs/arm64-v8a/libQt6Sql_arm64-v8a.so" target="jniLibs/arm64-v8a/libQt6Sql_arm64-v8a.so" />
+        <resource-file src="src/android/libs/arm64-v8a/libc++_shared.so" target="jniLibs/arm64-v8a/libc++_shared.so" />
+        <resource-file src="src/android/libs/arm64-v8a/libplugins_sqldrivers_qsqlite_arm64-v8a.so" target="jniLibs/arm64-v8a/libplugins_sqldrivers_qsqlite_arm64-v8a.so" />
+    </platform>
+</plugin>

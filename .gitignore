@@ -1,0 +1,12 @@
+node_modules/
+platforms/
+plugins/
+native-plugin/build/
+native-plugin/src/android/libs/
+*.apk
+*.aab
+*.sqlite
+*.keystore
+*.jks
+local.properties
+.env*

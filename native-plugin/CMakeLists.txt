@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.25)
+project(SqlitePoc LANGUAGES CXX)
+find_package(Qt6 6.12 REQUIRED COMPONENTS Core Sql)
+add_library(SqlitePoc SHARED src/android/SqlitePoc.cpp)
+target_link_libraries(SqlitePoc PRIVATE Qt6::Core Qt6::Sql)

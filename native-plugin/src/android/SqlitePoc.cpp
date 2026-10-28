@@ -48,6 +48,7 @@ static QJsonObject runDemo(const QString &path, const QString &driverPath)
     opened = database.open();
     QSqlQuery query(database);
     bool selected = query.exec("SELECT message FROM demo WHERE id = 1");
+    query.next();
     return {{"path", path}, {"message", query.value(0).toString()}};
 }
 

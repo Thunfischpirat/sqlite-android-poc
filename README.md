@@ -20,29 +20,41 @@ flowchart TD
 | Android Java | Supply private storage and native-library paths; call JNI directly; deliver the callback | [SqlitePoc.java](native-plugin/src/android/SqlitePoc.java) |
 | JNI and Qt C++ | Convert strings; load the driver; create, insert, close, reopen and select; clean up the connection | [SqlitePoc.cpp](native-plugin/src/android/SqlitePoc.cpp) |
 
+## Build stages
 
-## Build on Windows
+```mermaid
+flowchart LR
+    CPP["C++ source"] --> Native["CMake + Ninja + NDK"]
+    Qt["Qt libraries"] --> Native
+    Native --> SO["libSqlitePoc.so"]
 
-Baseline: Qt **6.12.0** Android ARM64 plus its desktop host kit, NDK **27.2.12479018**, native API **28**, JDK **21**, CMake **3.25+**, Ninja, Node.js and Cordova CLI. Cordova Android **15.1.0** uses Android SDK 36. Only Android ARM64 is packaged.
+    SO --> App["Cordova + Gradle"]
+    Qt --> App
+    Java["Java plugin"] --> App
+    Web["HTML + JavaScript"] --> App
 
-Set `JAVA_HOME` and `ANDROID_HOME` for your machine. From this directory, build and stage the native libraries **before installing/restoring the plugin**:
-
-```powershell
-./scripts/build-native.ps1 -QtAndroidPath C:/Qt/6.12.0/android_arm64_v8a -QtHostPath C:/Qt/6.12.0/mingw_64 -NdkPath "$env:ANDROID_HOME/ndk/27.2.12479018" -CMake cmake -Ninja ninja
-npm ci
-cordova prepare android
-cordova run android --device
+    App --> APK["Android APK"]
 ```
 
-The script builds the C++ plugin and copies the Qt libraries required by the Android app.
+## Build and run on Windows
 
-After editing native/plugin source, rebuild and reinstall the plugin copy:
+Your PC needs:
+
+- Python 3.10+ (64-bit).
+- JDK 21, with `JAVA_HOME` set to its installation directory.
+- Node.js/npm and the Cordova CLI.
+- Android SDK 36, platform-tools and command-line tools (`cmdline-tools/latest`), with `ANDROID_HOME` set to the SDK directory.
+
+From the project directory, run:
 
 ```powershell
-./scripts/build-native.ps1 -QtAndroidPath C:/Qt/6.12.0/android_arm64_v8a -QtHostPath C:/Qt/6.12.0/mingw_64 -NdkPath "$env:ANDROID_HOME/ndk/27.2.12479018"
-cordova plugin remove cordova-plugin-sqlite-poc
-cordova plugin add ./native-plugin
-cordova run android --device
+./build.ps1
 ```
 
+The script installs the required Qt/C++ tools automatically and builds the app. Use the same command after changing native/plugin code.
+
+## Run App
+```powershell
+cordova run android --device
+```
 

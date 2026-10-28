@@ -11,3 +11,4 @@ native-plugin/src/android/libs/
 *.swp
 local.properties
 .env*
+aqtinstall.log

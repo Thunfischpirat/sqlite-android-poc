@@ -12,11 +12,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^15.1.0",
+    "cordova-ios": "8.1.1",
     "cordova-plugin-sqlite-poc": "file:native-plugin"
   },
   "cordova": {
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ],
     "plugins": {
       "cordova-plugin-sqlite-poc": {}

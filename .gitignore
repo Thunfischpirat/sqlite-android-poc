@@ -3,6 +3,8 @@ platforms/
 plugins/
 native-plugin/build/
 native-plugin/src/android/libs/
+native-plugin/src/ios/libs/
+native-plugin/build-ios/
 *.apk
 *.aab
 *.sqlite

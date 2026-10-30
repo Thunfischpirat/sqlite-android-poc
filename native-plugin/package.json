@@ -4,7 +4,8 @@
   "cordova": {
     "id": "cordova-plugin-sqlite-poc",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   }
 }

@@ -1,60 +1,52 @@
-# Qt SQLite on Android — minimal Cordova PoC
+# Qt SQLite — Cordova proof of concept
+
+The same screen calls the same Qt SQL demonstration on Android and iOS. It creates a SQLite database in app-private storage, writes a message, closes the database, reopens it read-only and displays the stored message.
 
 ## Follow the code
 
-```mermaid
-flowchart TD
-    UI["HTML button + JavaScript handler"] --> Bridge["Cordova JS bridge: run()"]
-    Bridge --> Java["Java: private storage paths + direct JNI call"]
-    Java --> JNI["JNI: Java strings into C++"]
-    JNI --> Qt["Qt SQL + packaged QSQLITE driver"]
-    Qt --> DB[("App-private demo.sqlite")]
-    DB --> Qt
-    Qt --> Result["JSON result → Java callback → screen"]
+```text
+                               Android: Java → JNI ──────┐
+HTML → JavaScript → Cordova                              ├→ shared C++ → Qt SQL → SQLite
+                               iOS:     Swift → C bridge ─┘
 ```
 
-| Layer | Responsibility | Source |
+| Layer | Source | Responsibility |
 | --- | --- | --- |
-| Frontend | Enable the button after Cordova is ready; show the result; disable while pending | [HTML](www/index.html), [JavaScript](www/js/index.js) |
-| Cordova bridge | Route one method to service `SqlitePoc`, action `run` | [SqlitePoc.js](native-plugin/www/SqlitePoc.js) |
-| Android Java | Supply private storage and native-library paths; call JNI directly; deliver the callback | [SqlitePoc.java](native-plugin/src/android/SqlitePoc.java) |
-| JNI and Qt C++ | Convert strings; load the driver; create, insert, close, reopen and select; clean up the connection | [SqlitePoc.cpp](native-plugin/src/android/SqlitePoc.cpp) |
+| Screen | [HTML](www/index.html), [JavaScript](www/js/index.js) | Run the demonstration and show the result |
+| Cordova bridge | [SqlitePoc.js](native-plugin/www/SqlitePoc.js) | Send `run` to the platform plugin |
+| Android | [Java](native-plugin/src/android/SqlitePoc.java), [JNI](native-plugin/src/android/SqlitePoc.cpp) | Choose the database path and call C++ |
+| iOS | [Swift](native-plugin/src/ios/SqlitePoc.swift), [C bridge](native-plugin/src/ios/SqlitePocBridge.cpp) | Choose the database path and call C++ |
+| Both platforms | [SqliteDemo.cpp](native-plugin/src/shared/SqliteDemo.cpp) | Create, write, close, reopen and read using Qt's QSQLITE driver |
 
-## Build stages
+Android loads the Qt SQLite driver as a library. On iOS, Qt and the driver are linked into the app. The bridge's C interface lets Swift call the shared C++ without exposing Qt types to Swift.
 
-```mermaid
-flowchart LR
-    CPP["C++ source"] --> Native["CMake + Ninja + NDK"]
-    Qt["Qt libraries"] --> Native
-    Native --> SO["libSqlitePoc.so"]
+## Android on Windows
 
-    SO --> App["Cordova + Gradle"]
-    Qt --> App
-    Java["Java plugin"] --> App
-    Web["HTML + JavaScript"] --> App
-
-    App --> APK["Android APK"]
-```
-
-## Build and run on Windows
-
-Your PC needs:
-
-- Python 3.10+ (64-bit).
-- JDK 21, with `JAVA_HOME` set to its installation directory.
-- Node.js/npm and the Cordova CLI.
-- Android SDK 36, platform-tools and command-line tools (`cmdline-tools/latest`), with `ANDROID_HOME` set to the SDK directory.
-
-From the project directory, run:
+Requires Python 3.10+ (64-bit), JDK 21, Node.js/npm, Cordova CLI and Android SDK 36 with platform-tools and command-line tools. Set `JAVA_HOME` and `ANDROID_HOME`.
 
 ```powershell
 ./build.ps1
-```
-
-The script installs the required Qt/C++ tools automatically and builds the app. Use the same command after changing native/plugin code.
-
-## Run App
-```powershell
 cordova run android --device
 ```
 
+The build script prepares its Qt/C++ tools and creates a debug APK. A connected, authorized Android device is required to run it.
+
+## iOS simulator on an Apple Silicon Mac
+
+Use a separate Mac checkout or copy of the project, without generated Android files. Requires Xcode with an iOS 18 or newer simulator, Node 20.17+, Cordova CLI, Python 3 and Homebrew Ruby. For example, on the Mac used for this PoC, `nvm use 20` selects the installed Node version.
+
+Run the one-time setup from the project directory:
+
+```bash
+bash setup-ios.sh
+```
+
+It puts CMake, Ninja, CocoaPods and Qt 6.12 under `~/Christian/sqlite-poc-tools`. Qt's prebuilt iOS simulator library is for Intel, so setup builds a native ARM64 simulator kit from Qt source; the first setup takes several minutes. Set `SQLITE_POC_TOOLS` before both commands to choose another tools directory.
+
+Build or rebuild the app:
+
+```bash
+bash build-ios.sh
+```
+
+Open `platforms/ios/App.xcworkspace` in Xcode, select an iPad simulator and run the `App` scheme. Alternatively, install `platforms/ios/build/Debug-iphonesimulator/SqliteAndroidPoc.app` using `xcrun simctl`. This build targets the Apple Silicon simulator; deploying to a physical iPhone or iPad requires a device build and Xcode signing setup.

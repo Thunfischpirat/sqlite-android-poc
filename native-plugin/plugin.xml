@@ -4,6 +4,30 @@
     <js-module name="SqlitePoc" src="www/SqlitePoc.js">
         <clobbers target="cordova.plugins.sqlitePoc" />
     </js-module>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SqlitePoc">
+                <param name="ios-package" value="SqlitePoc" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/SqlitePoc.swift" />
+        <header-file src="src/ios/SqlitePocBridge.h" type="BridgingHeader" />
+        <source-file src="src/ios/libs/libSqlitePoc.a" framework="true" />
+        <source-file src="src/ios/libs/libQtSql.a" framework="true" />
+        <source-file src="src/ios/libs/libQSQLite.a" framework="true" />
+        <source-file src="src/ios/libs/libQtCore.a" framework="true" />
+        <source-file src="src/ios/libs/libQtPcre2.a" framework="true" />
+        <framework src="Foundation.framework" />
+        <framework src="IOKit.framework" />
+        <framework src="CoreFoundation.framework" />
+        <framework src="UIKit.framework" />
+        <framework src="Security.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="UniformTypeIdentifiers.framework" />
+        <framework src="MobileCoreServices.framework" />
+        <framework src="libz.tbd" />
+        <framework src="libc++.tbd" />
+    </platform>
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SqlitePoc">

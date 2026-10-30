@@ -2,7 +2,7 @@
 <widget id="com.example.sqlitepoc" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>SqliteAndroidPoc</name>
     <description>
-        Minimal Cordova to Qt SQLite Android proof of concept.
+        Cordova to Qt SQLite proof of concept for Android and iOS.
     </description>
     <content src="index.html" />
     <platform name="ios">

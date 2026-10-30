@@ -2,7 +2,7 @@
   "name": "com.example.sqlitepoc",
   "displayName": "SqliteAndroidPoc",
   "version": "1.0.0",
-  "description": "Minimal Cordova to Qt SQLite Android proof of concept.",
+  "description": "Cordova to Qt SQLite proof of concept for Android and iOS.",
   "scripts": {
     "test": "node --check www/js/index.js && node --check native-plugin/www/SqlitePoc.js"
   },

@@ -1,4 +1,4 @@
-# Qt SQLite — Cordova proof of concept
+# sqlite-qt-poc
 
 The same screen calls the same Qt SQL demonstration on Android and iOS. It creates a SQLite database in app-private storage, writes a message, closes the database, reopens it read-only and displays the stored message.
 
